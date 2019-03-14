@@ -37,6 +37,8 @@ default : printf("UNKNOWN?????\n"); break;
 
 printf("I-node number:		%ld\n", (long)sb.st_ino);
 
+printf("MODE:		%lo(octal)\n", (unsigned long)sb.st_mode);
+
 printf("Link count:		%ld\n", (long)sb.st_nlink);
 
 printf("Ownership:	UID=%ld GID %ld\n", (long)sb.st_uid,(long)sb.st_gid);
