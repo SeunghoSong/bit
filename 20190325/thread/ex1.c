@@ -5,7 +5,10 @@
 #include <time.h>
 
 
+	clock_t start1,end1;
+
 void* t_F(void){
+	start1=clock();
 	unsigned long long temp=0;
 	int i=0;
 	while(i<=200000)
@@ -13,17 +16,15 @@ void* t_F(void){
 		temp+=i;
 		i++;
 	}
-
+	end1=clock();
 	return(void*)temp;
 }
 
 int main(){
-	clock_t start1,end1;
 	pthread_t p_thread;
 	
 	unsigned long long status=0;
 	int ret;
-	start1=clock();
 	if((ret=pthread_create(&p_thread,NULL,t_F,(void*)NULL))<0){
 	
 		perror("ERROR: create\n");

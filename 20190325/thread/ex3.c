@@ -12,6 +12,10 @@ long long temp;
 static int semid;
 clock_t start1,start2,end1,end2;
 
+struct numset {
+	int start;
+	int end;
+};
 
 union semun{
 	int val;
@@ -42,10 +46,11 @@ void p()
 
 
 void* t1(void* data){
-	int i=1;
+	struct numset argv =(struct numset)data;
+	int i=argv.start;
 	start1=clock();
-		p();
-	while(i<100000)
+	p();
+	while(i<argv.end)
 	{ 
 		temp+=i;
 		i++;
@@ -55,26 +60,37 @@ void* t1(void* data){
 }
 
 void* t2(void* data){
-	int i=100000;
-	start2=clock();
-		p();
-	while(i<=200000)
-	{
+	struct numset argv =(struct numset)data;
+	int i=argv.start;
+	start1=clock();
+	p();
+	while(i<argv.end)
+	{ 
 		temp+=i;
 		i++;
 	}
 		v();
-	end2=clock();
+	end1=clock();
 }
 
-
-int main()
+int main(int arvc,char* arvg)
 {
+	if(arvc<2){
+	printf("arg error\n");
+	return -1;
+	}
+
 	pthread_t p_thread[2];
 	
 	unsigned long long status1=0,status2=0;
 	int ret1,ret2;
 	
+	struct numset arg_num[2];
+
+	arg_num[0].start=atoi(arvg[1]);
+	arg_num[0].end=((atoi(arvg[1])+atoi(arvg[2]))/2);
+	arg_num[1].start=((atoi(arvg[1])+atoi(arvg[2]))/2);
+	arg_num[1].end=atoi(arvg[2]);
 
  	if((semid=semget((key_t)1234,1, IPC_CREAT|0666))==-1) 
  	{
@@ -88,12 +104,12 @@ int main()
          perror("Error:semctl():SETVAL\n");
          return -1;
 	}
-	if((ret1=pthread_create(&p_thread[0],NULL,t1,(void*)NULL))<0)
+	if((ret1=pthread_create(&p_thread[0],NULL,t1,(void*)&arg_num[0]))<0)
 	{
 		perror("ERROR: create\n");
 		return -1;
 	}
-	if((ret2=pthread_create(&p_thread[1],NULL,t2,(void*)NULL))<0)
+	if((ret2=pthread_create(&p_thread[1],NULL,t2,(void*)&arg_num[1]))<0)
 	{
 		perror("ERROR: create\n");
 		return -2;
