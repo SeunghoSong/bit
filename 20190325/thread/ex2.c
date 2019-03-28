@@ -44,7 +44,7 @@ void p()
 void* t1(void* data){
 	int i=1;
 	start1=clock();
-		p();
+	p();
 	while(i<100000)
 	{ 
 		temp+=i;
@@ -88,6 +88,7 @@ int main()
          perror("Error:semctl():SETVAL\n");
          return -1;
 	}
+
 	if((ret1=pthread_create(&p_thread[0],NULL,t1,(void*)NULL))<0)
 	{
 		perror("ERROR: create\n");

@@ -8,6 +8,7 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 
+//#define DEBUG
 long long temp;
 static int semid;
 clock_t start1,start2,end1,end2;
@@ -46,34 +47,38 @@ void p()
 
 
 void* t1(void* data){
-	struct numset argv =(struct numset)data;
+	struct numset argv =*((struct numset*)data);
 	int i=argv.start;
+	long long t_temp=0;
 	start1=clock();
-	p();
 	while(i<argv.end)
 	{ 
-		temp+=i;
+		t_temp+=i;
 		i++;
 	}
-		v();
+	p();
+	temp+=t_temp;
+	v();
 	end1=clock();
 }
 
 void* t2(void* data){
-	struct numset argv =(struct numset)data;
+	struct numset argv =*((struct numset*)data);
 	int i=argv.start;
-	start1=clock();
-	p();
-	while(i<argv.end)
+	long long t_temp=0;
+	start2=clock();
+	while(i<=argv.end)
 	{ 
-		temp+=i;
+		t_temp+=i;
 		i++;
 	}
-		v();
-	end1=clock();
+	p();
+	temp+=t_temp;
+	v();
+	end2=clock();
 }
 
-int main(int arvc,char* arvg)
+int main(int arvc,char* arvg[])
 {
 	if(arvc<2){
 	printf("arg error\n");
@@ -91,6 +96,13 @@ int main(int arvc,char* arvg)
 	arg_num[0].end=((atoi(arvg[1])+atoi(arvg[2]))/2);
 	arg_num[1].start=((atoi(arvg[1])+atoi(arvg[2]))/2);
 	arg_num[1].end=atoi(arvg[2]);
+
+#ifdef DEBUG
+printf("%d\n",arg_num[0].start);
+printf("%d\n",arg_num[0].end);
+printf("%d\n",arg_num[1].start);
+printf("%d\n",arg_num[1].end);
+#endif
 
  	if((semid=semget((key_t)1234,1, IPC_CREAT|0666))==-1) 
  	{
